@@ -12,7 +12,7 @@ let config = {
 
 // The TodoStore itself
 export const useTodoStore = defineStore("todoStore", {
-  state: () => ({ listOfActions: [] as TodoItem[] }),
+  state: () => ({ listOfTodos: [] as TodoItem[] }),
   
   actions: {
     async callAPI() {
@@ -32,13 +32,13 @@ export const useTodoStore = defineStore("todoStore", {
         return;
 
       // Add the TodoItem to the list if it doesn't exist yet
-      if (this.listOfActions.find(x => x.id === itemId) == undefined)
-        this.listOfActions.push(await promiseTodoItem);
+      if (this.listOfTodos.find(x => x.id === itemId) == undefined)
+        this.listOfTodos.push(await promiseTodoItem);
     },
   },
 })
 
-class TodoItem {
+export class TodoItem {
   id: string;
   assignee: string;
   dueDateTime: Date;

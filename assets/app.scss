@@ -16,6 +16,23 @@ body{
   }
 }
 
+.table-item::after {
+  content: "\a";
+  white-space: pre;
+}
+
+select {
+  padding: 8px 16px;
+  border-radius: 5px;
+  border: none;
+  color: white;
+  background-color: #175dc7;
+  cursor: pointer;
+  &:hover {
+    background-color: #124da4
+  }
+}
+
 // Default, desktop view
 @include desktop {
   .element-wrapper {
