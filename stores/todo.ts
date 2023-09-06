@@ -1,3 +1,4 @@
+// Axios part, needed for calling API
 import axios from 'axios';
 
 let config = {
@@ -8,25 +9,29 @@ let config = {
     'x-api-key': '6AgP2Gr7j3QvJHIr7xOq4OlY5McyScy3kqQL5Mr7'
   }
 };
+
+// The TodoStore itself
 export const useTodoStore = defineStore("todoStore", {
   state: () => ({ listOfActions: [] as TodoItem[] }),
   
   actions: {
     async callAPI() {
-      let todoItem: Promise<TodoItem> = axios.request(config)
+      let promiseTodoItem: Promise<TodoItem> = axios.request(config)
         .then((response: any) => {
-          console.log(JSON.stringify(response.data));
-          return JSON.parse(JSON.stringify(response.data));
+          let tempObj: any = JSON.parse(JSON.stringify(response.data)).todo;
+          return new TodoItem(tempObj.id, tempObj.assignee, tempObj.dueDateTime, tempObj.description)
         })
         .catch((error: any) => {
           console.log(error);
-          return null;
+          return new TodoItem("", "", new Date(), "");
         });
-      
-      if (await todoItem === null)
+
+      const itemId: string = (await promiseTodoItem).id
+      if (itemId === "")
         return;
 
-      this.listOfActions.push(await todoItem);
+      if (this.listOfActions.find(x => x.id === itemId) == undefined)
+        this.listOfActions.push(await promiseTodoItem);
     },
   },
 })
