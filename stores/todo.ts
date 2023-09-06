@@ -16,20 +16,22 @@ export const useTodoStore = defineStore("todoStore", {
   
   actions: {
     async callAPI() {
-      let promiseTodoItem: Promise<TodoItem> = axios.request(config)
+      const promiseTodoItem: Promise<TodoItem> = axios.request(config)
         .then((response: any) => {
-          let tempObj: any = JSON.parse(JSON.stringify(response.data)).todo;
-          return new TodoItem(tempObj.id, tempObj.assignee, tempObj.dueDateTime, tempObj.description)
+          return JSON.parse(JSON.stringify(response.data)).todo
         })
         .catch((error: any) => {
           console.log(error);
           return new TodoItem("", "", new Date(), "");
         });
-
+      
+      // The id of the item is getting used several times
       const itemId: string = (await promiseTodoItem).id
+      // Exit the action, this is the case when an error has occured
       if (itemId === "")
         return;
 
+      // Add the TodoItem to the list if it doesn't exist yet
       if (this.listOfActions.find(x => x.id === itemId) == undefined)
         this.listOfActions.push(await promiseTodoItem);
     },
