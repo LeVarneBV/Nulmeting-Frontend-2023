@@ -12,7 +12,7 @@
         </ul>
         <br>
         <label>Kies een sorteer optie: </label>
-        <select v-model="sortselect" id="sortselect">
+        <select v-model="sortselect" id="sort-select">
           <option value="Name">Naam</option>
           <option value="Date">Datum</option>
           <option value="Description">Beschrijving</option>
@@ -28,17 +28,13 @@
 import { TodoItem } from 'stores/todo'
 const todoStore = useTodoStore();
 
+const sortselect = ref('Name');
+
 const todos = computed(() => {
-  return todoStore.listOfTodos.sort((a, b) => sortMethod(a, b, "Date"));
+  return todoStore.listOfTodos.sort((a, b) => sortMethod(a, b, sortselect.value));
 });
 
-// I want to use this part for sorting the list, but I can't fix the problem
-// with being allowed of using 'sortType'... (or sortselect.value)
-const sortselect = ref(null);
-onMounted(() => {
-  const sortType: string | null = sortselect.value
-})
-// I know that this function isn't entirely functionably
+// For sorting the todoList
 function sortMethod(element1: TodoItem, element2: TodoItem, sortingType: string): number {
   if (sortingType === "Name")
       return spaceshipOperator(element1.assignee, element2.assignee);
@@ -46,7 +42,7 @@ function sortMethod(element1: TodoItem, element2: TodoItem, sortingType: string)
       return spaceshipOperator(element1.dueDateTime, element2.dueDateTime);
   if (sortingType === "Description")
       return spaceshipOperator(element1.description, element2.description);
-  return 0;
+  return 0; // The original way that the elements were put in
 }
 
 // Name says what is it does, 0 is not relevent

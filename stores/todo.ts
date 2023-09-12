@@ -5,7 +5,7 @@ let config = {
   maxBodyLength: Infinity,
   url: 'https://86a4h9y007.execute-api.eu-west-1.amazonaws.com/development/nulmeting/todo',
   headers: {
-    'x-api-key': '6AgP2Gr7j3QvJHIr7xOq4OlY5McyScy3kqQL5Mr7'
+    'x-api-key': '' // You have to put in the x-api-key yourself
   }
 };
 
