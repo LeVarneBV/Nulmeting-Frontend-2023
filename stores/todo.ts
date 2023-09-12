@@ -1,11 +1,10 @@
-// Axios part, needed for calling API
-import axios from 'axios';
+import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
 
 let config = {
   method: 'get',
   maxBodyLength: Infinity,
   url: 'https://86a4h9y007.execute-api.eu-west-1.amazonaws.com/development/nulmeting/todo',
-  headers: { 
+  headers: {
     'x-api-key': '6AgP2Gr7j3QvJHIr7xOq4OlY5McyScy3kqQL5Mr7'
   }
 };
@@ -13,41 +12,41 @@ let config = {
 // The TodoStore itself
 export const useTodoStore = defineStore("todoStore", {
   state: () => ({ listOfTodos: [] as TodoItem[] }),
-  
+
   actions: {
     async callAPI() {
-      const promiseTodoItem: Promise<TodoItem> = axios.request(config)
-        .then((response: any) => {
-          return JSON.parse(JSON.stringify(response.data)).todo
+      const todoItemData: _AsyncData<string, Error | null> = await useFetch(config.url,
+        {
+          method: "GET",
+          headers: config.headers
         })
-        .catch((error: any) => {
-          console.log(error);
-          return new TodoItem("", "", new Date(), "");
-        });
-      
-      // The id of the item is getting used several times
-      const itemId: string = (await promiseTodoItem).id
-      // Exit the action, this is the case when an error has occured
-      if (itemId === "")
-        return;
+
+      if (todoItemData.error.value != null)
+      {
+        console.log(`Er ging iets fout in de useFetch:\n${todoItemData.error.value}`);
+      }
+      const retrievedObject: any = JSON.parse(JSON.stringify(todoItemData.data.value)).todo;
+      //The id of the item is getting used several times
 
       // Add the TodoItem to the list if it doesn't exist yet
-      if (this.listOfTodos.find(x => x.id === itemId) == undefined)
-        this.listOfTodos.push(await promiseTodoItem);
+      if (this.listOfTodos.find(x => x.id === retrievedObject.id) == undefined)
+        this.listOfTodos.push(apiObjectConvert(retrievedObject));
     },
   },
 })
 
-export class TodoItem {
+export interface TodoItem {
   id: string;
   assignee: string;
   dueDateTime: Date;
   description: string;
+}
 
-  constructor (id: string, assignee: string, dueDateTime: Date, description: string) {
-    this.id = id;
-    this.assignee = assignee;
-    this.dueDateTime = dueDateTime;
-    this.description = description;
+function apiObjectConvert(apiObject: any): TodoItem{
+  return {
+    id: apiObject.id,
+    assignee: apiObject.assignee,
+    dueDateTime: new Date(apiObject.dueDateTime),
+    description: apiObject.description
   }
 }

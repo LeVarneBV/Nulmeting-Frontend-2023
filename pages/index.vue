@@ -6,13 +6,13 @@
         <LevButton @clicked="todoStore.callAPI">Haal opdracht op!</LevButton>
         <br>
         <ul id="todo-table">
-          <li v-for="todo in todos" class="table-item">
-            {{ todo.assignee }} - {{ getNormalTimeFormat(todo.dueDateTime)}} - {{ todo.description }}
+          <li v-for="todo in todos" class="table-item" v-bind:key="todo.id">
+            {{ todo.assignee }} - {{ getNormalTimeFormat(todo.dueDateTime) }} - {{ todo.description }}
           </li>
         </ul>
         <br>
         <label>Kies een sorteer optie: </label>
-        <select ref="sortselect">
+        <select v-model="sortselect" id="sortselect">
           <option value="Name">Naam</option>
           <option value="Date">Datum</option>
           <option value="Description">Beschrijving</option>
@@ -32,14 +32,12 @@ const todos = computed(() => {
   return todoStore.listOfTodos.sort((a, b) => sortMethod(a, b, "Date"));
 });
 
-// I want to use this part for sorting the list, but I can't fix the problem 
+// I want to use this part for sorting the list, but I can't fix the problem
 // with being allowed of using 'sortType'... (or sortselect.value)
 const sortselect = ref(null);
 onMounted(() => {
   const sortType: string | null = sortselect.value
 })
-</script>
-<script lang="ts">
 // I know that this function isn't entirely functionably
 function sortMethod(element1: TodoItem, element2: TodoItem, sortingType: string): number {
   if (sortingType === "Name")
@@ -61,12 +59,7 @@ function spaceshipOperator(element1: any, element2: any): number {
 
 // I took a lot of time to use a function. But I couldn't get it working
 function getNormalTimeFormat(dateTime: Date): string {
-  let timeString = dateTime.toString();
-  const year: string = timeString.substring(0, 4);
-  const month: string = timeString.substring(5, 7);
-  const day: string = timeString.substring(8, 10);
-  const hours: string = timeString.substring(11, 13);
-  const minutes: string = timeString.substring(14, 16);
-  return `${day}/${month}/${year}, ${hours}:${minutes}`;
+  return `${dateTime.toLocaleDateString()},
+          ${dateTime.toTimeString().slice(0, 5)}`;
 }
 </script>
